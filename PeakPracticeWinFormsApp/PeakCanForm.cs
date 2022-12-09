@@ -48,7 +48,9 @@ namespace PeakPracticeWinFormsApp
         {
             InitializeComponent();
             AddChannlesandBitrates();
+
         }
+
 
         //Add channels and bitrates to the Channels and Bitrates ComboBox
         public void AddChannlesandBitrates()
@@ -153,46 +155,96 @@ namespace PeakPracticeWinFormsApp
 
         private void Startbutton_Click(object sender, EventArgs e)
         {
-            if (BroadcastdataGridView.CurrentRow != null)
+            try
             {
-                Broadcast brd = broadcasts[BroadcastdataGridView.SelectedRows[0].Index];
+                if (BroadcastdataGridView.CurrentRow != null)
+                {
+                    Broadcast brd = broadcasts[BroadcastdataGridView.SelectedRows[0].Index];
 
-                worker.AddBroadcast(ref brd);
-                worker.MessageAvailable += Workerworker_MessageAvailable;
+                    worker.AddBroadcast(ref brd);
 
-                worker.Start();
+                    worker.Start();
 
+                    worker.MessageAvailable += Workerworker_MessageAvailable;
+
+                }
+                else
+                {
+                    MessageBox.Show("Please select a row!");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Please select a row!");
+
+                MessageBox.Show($"Error {ex.Message}");
             }
         }
 
         private void removebutton_Click(object sender, EventArgs e)
         {
-            broadcasts.RemoveAt(BroadcastdataGridView.SelectedRows[0].Index);
-            BroadcastdataGridView.Rows.RemoveAt(BroadcastdataGridView.SelectedRows[0].Index);         
+            if (BroadcastdataGridView.CurrentRow != null)
+            {
+                broadcasts.RemoveAt(BroadcastdataGridView.SelectedRows[0].Index);
+                BroadcastdataGridView.Rows.RemoveAt(BroadcastdataGridView.SelectedRows[0].Index);
+            }
+            else if (broadcasts.Count == 0)
+            {
+                MessageBox.Show("Please add an Broadcast message.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an Broadcast message.");
+            }
+                       
         }
 
         public void Workerworker_MessageAvailable(object? sender, MessageAvailableEventArgs e)
-        {
-            PcanMessage output;
-            ulong timestamp;
+        {         
+            //while (worker.Dequeue(out output, out timestamp))
+            //    ProcessYourMessage(output, timestamp);
+            //worker.Stop();
 
-            while (worker.Dequeue(out output, out timestamp))
-                ProcessYourMessage(output, timestamp);
-            worker.Stop();
+            try
+            {
+                PcanMessage output;
+                ulong timestamp;
+
+                if (worker.Dequeue(e.QueueIndex, out output, out timestamp))
+                {
+                    ProcessYourMessage(output,timestamp);
+                    //worker.Stop();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"Error {ex.Message}");
+            }
+
         }
 
         public void ProcessYourMessage(object msg, ulong timestamp)
         {
-            CanDatenlistBox.Text = $" New message retrieved. Timestamp: {timestamp} | {msg}";
+            CanDatenlistBox.Items.Add($" New message retrieved. Timestamp: {timestamp} | {msg}");
+            CanDatenlistBox.Refresh();
         }
 
         private void Stopbutton_Click(object sender, EventArgs e)
         {
             worker.Stop();
+        }
+
+        private void disconnectbutton_Click(object sender, EventArgs e)
+        {
+            if(worker !=null)
+            {
+                worker.Stop();
+                worker = null;
+                this.Controls.Clear();
+                InitializeComponent();
+
+                worker.MessageAvailable -= Workerworker_MessageAvailable;
+            }
         }
     }
 }

@@ -93,6 +93,7 @@ namespace PeakPracticeWinFormsApp
             this.disconnectbutton.TabIndex = 2;
             this.disconnectbutton.Text = "Disconnect";
             this.disconnectbutton.UseVisualStyleBackColor = true;
+            this.disconnectbutton.Click += new System.EventHandler(this.disconnectbutton_Click);
             // 
             // BitratecomboBox
             // 
@@ -298,7 +299,7 @@ namespace PeakPracticeWinFormsApp
             this.CanDatenlistBox.Size = new System.Drawing.Size(511, 139);
             this.CanDatenlistBox.TabIndex = 1;
             // 
-            // Form1
+            // PeakCanForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -306,7 +307,7 @@ namespace PeakPracticeWinFormsApp
             this.Controls.Add(this.BroadcastgroupBox);
             this.Controls.Add(this.CanDatenlistBox);
             this.Controls.Add(this.CanConnectiongroupBox);
-            this.Name = "Form1";
+            this.Name = "PeakCanForm";
             this.Text = "PCanPractice";
             this.CanConnectiongroupBox.ResumeLayout(false);
             this.CanConnectiongroupBox.PerformLayout();
